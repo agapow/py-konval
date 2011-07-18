@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: konval
+Version: 0.1dev
+Summary: A framework for data validation & conversion
+Home-page: http://www.agapow.net
+Author: Paul-Michael Agapow
+Author-email: pma@agapow.net
+License: MIT
+Description: UNKNOWN
+Keywords: validation conversion
+Platform: UNKNOWN
