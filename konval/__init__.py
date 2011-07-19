@@ -1,105 +1,43 @@
 """
-Prompting the users for, and validating, answers.
+Validation and conversion of data.
 
-In *qanda*, answers from a user may be processed through a list of validators.
-This follows the idiom of Ian Bicking & FormEncode where validation and
-conversion are one and the same: raw values are passed into a converter and the
-results are passed into the next. Should an exception be raised, conversion is
-halted, an error message printed (based on the exception message) and the
-question posed again.
+The problem of sanitizing data (checking correctness and transforming to a
+useful form) is widespread throughout programming:
 
-Additional validators are easy to construct. The minimum interface they need is
-to be callable with a value and to return a (possibly transformed) value,
-optionally throwing an exception if the value is not valid. Thus, type
-constructors can be used as validators::
+* How do I verify user input is correct?
+* How do I munge data from a spreadsheet into dates and numbers?
+* How do I convert raw database fields into an object?
 
-	prompt.string ("Give me a float", converters=[float])
+Ian Bicking produced a sensible approach to this, embodied in his Formencode
+library: data validation and conversion are one and the same thing, and can be
+handled by passing raw data through a chain of validators. konval is a package
 
-More complex validators can be derived from a supplied base class. BaseValidator
-supplies three methods for overriding and customising validator behaviour:
-``__call__``, ``convert`` and ``validate``. Custom validators should only need
-subclass one of these methods and perhaps supply a c'tor.
+* a rich library of validation objects
+* base classes for easily producing custom validators
+* functions for easily using validators on objects
 
 """
-# TODO: "or" validator
 
-
-__docformat__ = "restructuredtext en"
+__version__ = "0.1"
+__author__ = "Paul-Michael Agapow"
+__email__ = "pma@agapow.net"
 
 
 ### IMPORTS
 
-import re
-import exceptions
-
-import defs
-
-__all__ = [
-
-]
+from fxn import *
+from basevalidator import *
+from typeval import *
 
 
 ### CONSTANTS & DEFINES
 
 ### IMPLEMENTATION ###
 
-class BaseValidator (object):
-	"""
-	A base class for custom validators.
+### CONSTANTS & DEFINES
 
-	Ideally, this should make validator subclasses simple to construct.  Derived
-	valuidators will often only have to override one method (of ``__call__``,
-	``convert`` and ``validate``) and perhaps supply a c'tor.
-	"""
+### IMPLEMENTATION ###
 
-	def __call__ (self, value):
-		"""
-		Converts and validates user input.
-
-		:Parameters:
-			value
-				value to be checked or transformed
-
-		:Returns:
-			the transformed or validated value
-
-		Should throw an error if any problems. Override in subclass if required.
-		"""
-		# NOTE: override in subclass
-		value = self.convert(value)
-		self.validate (value)
-		return value
-
-	def validate (self, value):
-		"""
-		Is this value correct or of the correct form?
-
-		:Parameters:
-			value
-				value to be checked
-
-		Should throw an exception if validations fails.  Override in subclass if
-		required.
-		"""
-		# NOTE: override in subclass
-		# probably a series of assertions
-		pass
-
-	def convert (self, value):
-		"""
-		Transform this value to the desired form.
-
-		:Parameters:
-			value
-				value to be transformed
-
-		:Returns:
-			the transformed value
-
-		Can throw if conversion fails.  Override in subclass if required.
-		"""
-		# NOTE: override in subclass
-		return value
 
 
 class Clean (BaseValidator):
@@ -182,32 +120,7 @@ class Range (BaseValidator):
 			assert value <= self.max, "%s is higher than %s" % (value, self.max)
 
 
-class ToInt (BaseValidator):
-	"""
-	Convert a value to an integer.
 
-	While you could just use ``int``, this throws a much nicer error message.
-	"""
-	def convert (self, value):
-		try:
-			conv_val = int (value)
-			return conv_val
-		except:
-			raise exceptions.ValueError ("not an integer")
-
-
-class ToFloat (BaseValidator):
-	"""
-	Convert a value to a float.
-
-	While you could just use ``float``, this throws a much nicer error message.
-	"""
-	def convert (self, value):
-		try:
-			conv_val = float (value)
-			return conv_val
-		except:
-			raise exceptions.ValueError ("not a float")
 
 
 class Length (BaseValidator):
@@ -228,95 +141,7 @@ class Length (BaseValidator):
 			assert len (value) <= self.max, "%s is higher than %s" % (value, self.max)
 
 
-class ConfirmType(FancyValidator):
-    """
-    Confirms that the input/output is of the proper type.
 
-    Uses the parameters:
-
-    subclass:
-        The class or a tuple of classes; the item must be an instance
-        of the class or a subclass.
-    type:
-        A type or tuple of types (or classes); the item must be of
-        the exact class or type.  Subclasses are not allowed.
-
-    Examples::
-
-        >>> cint = ConfirmType(subclass=int)
-        >>> cint.to_python(True)
-        True
-        >>> cint.to_python('1')
-        Traceback (most recent call last):
-            ...
-        Invalid: '1' is not a subclass of <type 'int'>
-        >>> cintfloat = ConfirmType(subclass=(float, int))
-        >>> cintfloat.to_python(1.0), cintfloat.from_python(1.0)
-        (1.0, 1.0)
-        >>> cintfloat.to_python(1), cintfloat.from_python(1)
-        (1, 1)
-        >>> cintfloat.to_python(None)
-        Traceback (most recent call last):
-            ...
-        Invalid: None is not a subclass of one of the types <type 'float'>, <type 'int'>
-        >>> cint2 = ConfirmType(type=int)
-        >>> cint2(accept_python=False).from_python(True)
-        Traceback (most recent call last):
-            ...
-        Invalid: True must be of the type <type 'int'>
-    """
-
-    subclass = None
-    type = None
-
-    messages = dict(
-        subclass=_('%(object)r is not a subclass of %(subclass)s'),
-        inSubclass=_('%(object)r is not a subclass of one of the types %(subclassList)s'),
-        inType=_('%(object)r must be one of the types %(typeList)s'),
-        type=_('%(object)r must be of the type %(type)s'))
-
-    def __init__(self, *args, **kw):
-        FancyValidator.__init__(self, *args, **kw)
-        if self.subclass:
-            if isinstance(self.subclass, list):
-                self.subclass = tuple(self.subclass)
-            elif not isinstance(self.subclass, tuple):
-                self.subclass = (self.subclass,)
-            self.validate_python = self.confirm_subclass
-        if self.type:
-            if isinstance(self.type, list):
-                self.type = tuple(self.type)
-            elif not isinstance(self.type, tuple):
-                self.type = (self.type,)
-            self.validate_python = self.confirm_type
-
-    def confirm_subclass(self, value, state):
-        if not isinstance(value, self.subclass):
-            if len(self.subclass) == 1:
-                msg = self.message('subclass', state, object=value,
-                                   subclass=self.subclass[0])
-            else:
-                subclass_list = ', '.join(map(str, self.subclass))
-                msg = self.message('inSubclass', state, object=value,
-                                   subclassList=subclass_list)
-            raise Invalid(msg, value, state)
-
-    def confirm_type(self, value, state):
-        for t in self.type:
-            if type(value) is t:
-                break
-        else:
-            if len(self.type) == 1:
-                msg = self.message('type', state, object=value,
-                                   type=self.type[0])
-            else:
-                msg = self.message('inType', state, object=value,
-                                   typeList=', '.join(map(str, self.type)))
-            raise Invalid(msg, value, state)
-        return value
-
-    def is_empty(self, value):
-        return False
 
 
 class Wrapper(FancyValidator):
