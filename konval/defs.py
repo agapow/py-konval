@@ -8,6 +8,9 @@ __docformat__ = "restructuredtext en"
 
 ### IMPORTS
 
+import re
+
+
 ### CONSTANTS & DEFINES
 
 TRUE_STRS = [
@@ -17,6 +20,8 @@ TRUE_STRS = [
 	'YES',
 	'Y',
 	'+',
+	'1',
+	1,
 ]
 
 FALSE_STRS = [
@@ -26,6 +31,8 @@ FALSE_STRS = [
 	'NO',
 	'N',
 	'-',
+	'0',
+	0,
 ]
 
 TRUE_FALSE_DICT = {}

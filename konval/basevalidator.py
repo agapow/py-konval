@@ -187,6 +187,34 @@ class BaseValidator (object):
 		return "can't validate '%s'" % (bad_val)
 
 
+class CustomValidator (BaseValidator):
+	def __init__ (self, conv_fn=None, conv_msg=None, val_fn=None, val_msg=None):
+		self.conv_fn = conv_fn
+		self.conv_msg = conv_msg
+		self.val_fn = val_fn
+		self.val_msg = val_msg
+	
+	def convert_value (self, value):
+		if self.conv_fn:
+			return self.conv_fn (value)
+		else:
+			return value
+		
+	def make_conversion_error_msg (self, bad_val, err):
+		if self.conv_msg:
+			return self.conv_msg % {'bad_val': bad_val, 'err': err}
+		else:
+			return BaseValidator.make_conversion_error_msg (bad_val, err)
+	
+	def validate_value (self, value):
+		if self.val_fn:
+			self.val_fn (value)
+		
+	def make_validation_error_msg (self, bad_val, err):
+		if self.val_msg:
+			return self.val_msg % {'bad_val': bad_val, 'err': err}
+		else:
+			return BaseValidator.make_validation_error_msg (bad_val, err)
 
 
 

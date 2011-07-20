@@ -9,6 +9,7 @@ __docformat__ = "restructuredtext en"
 ### IMPORTS
 
 from basevalidator import BaseValidator
+import impl
 from vocabval import Synonyms
 
 
@@ -62,34 +63,61 @@ class ToType (BaseValidator):
 		return self.to_type (value)
 
 
-class ToInt (BaseToType):
+class ToInt (ToType):
 	"""
 	Convert a value to an integer.
 	
 	While you could just use ``int``, this throws a much nicer error message.
 	"""
 	def __init__ (self):
-		BaseToType.__init__ (self, int, type_name='integer')
+		ToType.__init__ (self, int, type_name='integer')
 
 
-class ToFloat (BaseValidator):
+class ToFloat (ToType):
 	"""
 	Convert a value to a float.
 
 	While you could just use ``float``, this throws a much nicer error message.
 	"""
 	def __init__ (self):
-		BaseToType.__init__ (self, float)
+		ToType.__init__ (self, float)
 
 
-class ToStr (BaseValidator):
+class ToStr (ToType):
 	"""
 	Convert a value to a string.
 
 	While you could just use ``str``, this throws a much nicer error message.
 	"""
 	def __init__ (self):
-		BaseToType.__init__ (self, float)
+		ToType.__init__ (self, float)
+
+
+class ToList (BaseValidator):
+	"""
+	Convert a value to a string.
+
+	Makes sure that the result is a list, even if a list is passed in.
+	"""
+	def convert_value (self, value):
+		return impl.make_list (value)
+
+
+class ToNumber (ToType):
+	"""
+	Convert a value to a best fit representation of number.
+	
+	"""
+	def convert_value (self, value):
+		float_value = float(value)
+		try:
+			int_value = int(value)
+		except OverflowError:
+			return float_value
+		if float_value == int_value:
+			return int_value
+		return float_value
+
 
 
 class IsInstance (BaseValidator):
