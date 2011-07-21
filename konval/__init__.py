@@ -10,7 +10,8 @@ useful form) is widespread throughout programming:
 
 Ian Bicking produced a sensible approach to this, embodied in his Formencode
 library: data validation and conversion are one and the same thing, and can be
-handled by passing raw data through a chain of validators. konval is a package
+handled by passing raw data through a chain of validators. In this spirit,
+*konval* is a package
 
 * a rich library of validation objects
 * base classes for easily producing custom validators

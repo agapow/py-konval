@@ -8,7 +8,14 @@ __docformat__ = "restructuredtext en"
 
 ### IMPORTS
 
+import exceptions
+
 import impl
+
+__all__ = [
+	'BaseValidator',
+	'CustomValidator',
+]
 
 
 ### CONSTANTS & DEFINES
@@ -42,8 +49,6 @@ class BaseValidator (object):
 		required. However, it would probably be easier done in other methods
 		called by this.
 		"""
-		## Preconditions:
-		value = impl.make_list (value)
 		## Main:
 		value = self.convert(value)
 		self.validate (value)
@@ -71,9 +76,9 @@ class BaseValidator (object):
 			conv_val = self.convert_value (value)
 			return conv_val
 		except exceptions.Exception, err:
-			self.raise_conversion_error (bad_val, err)
+			self.raise_conversion_error (value, err)
 		except:
-			self.raise_conversion_error (bad_val, None)
+			self.raise_conversion_error (value, None)
 	
 	def convert_value (self, value):
 		"""
@@ -140,9 +145,9 @@ class BaseValidator (object):
 			self.validate_value (value)
 			return
 		except exceptions.Exception, err:
-			self.raise_validation_error (bad_val, err)
+			self.raise_validation_error (value, err)
 		except:
-			self.raise_validation_error (bad_val, None)
+			self.raise_validation_error (value, None)
 	
 	def validate_value (self, value):
 		"""
@@ -215,6 +220,14 @@ class CustomValidator (BaseValidator):
 			return self.val_msg % {'bad_val': bad_val, 'err': err}
 		else:
 			return BaseValidator.make_validation_error_msg (bad_val, err)
+
+
+
+## DEBUG & TEST ###
+
+if __name__ == "__main__":
+	import doctest
+	doctest.testmod()
 
 
 

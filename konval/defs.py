@@ -10,6 +10,11 @@ __docformat__ = "restructuredtext en"
 
 import re
 
+__all__ = [
+	'TRUE_FALSE_DICT',
+	'CANON_SPACE_RE',
+]
+
 
 ### CONSTANTS & DEFINES
 
@@ -41,7 +46,7 @@ for v in TRUE_STRS:
 for v in FALSE_STRS:
 	TRUE_FALSE_DICT[v] = False
 
-CANON_SPACE = re.compile (r'[\-_\s]+')
+CANON_SPACE_RE = re.compile (r'[\-_\s]+')
 
 
 ### IMPLEMENTATION ###

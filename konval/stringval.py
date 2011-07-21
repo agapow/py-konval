@@ -10,6 +10,7 @@ __docformat__ = "restructuredtext en"
 
 import re
 
+import impl
 from basevalidator import BaseValidator
 
 
@@ -22,6 +23,13 @@ class Strip (BaseValidator):
 	Transform strings by stripping flanking space.
 	
 	Note that this does not explicitly throw errors.
+	
+	For example::
+	
+		>>> v = Strip()
+		>>> v ('  abc  ')
+		'abc'
+		
 	"""
 	def convert_value (self, value):
 		return value.strip()
@@ -32,6 +40,13 @@ class ToLower (BaseValidator):
 	Transform strings by converting to lower case.
 	
 	Note that this does not explicitly throw errors.
+	
+	For example::
+	
+		>>> v = ToLower()
+		>>> v ('aBcD')
+		'abcd'
+	
 	"""
 	def convert_value (self, value):
 		return value.lower()
@@ -42,6 +57,13 @@ class ToUpper (BaseValidator):
 	Transform strings by converting to upper case.
 	
 	Note that this does not explicitly throw errors.
+	
+	For example::
+	
+		>>> v = ToUpper()
+		>>> v ('aBcD')
+		'ABCD'
+	
 	"""
 	def convert_value (self, value):
 		return value.upper()
@@ -50,6 +72,17 @@ class ToUpper (BaseValidator):
 class IsNonblank (BaseValidator):
 	"""
 	Only allow  non-blank strings (i.e. those with a length more than 0).
+	
+	For example::
+	
+		>>> v = IsNonblank()
+		>>> v ('abcd')
+		'abcd'
+		>>> v ('')
+		Traceback (most recent call last):
+		...
+		ValueError: can't validate ''
+		
 	"""
 	def validate_value (self, value):
 		assert isinstance (value, basestring)
@@ -59,6 +92,17 @@ class IsNonblank (BaseValidator):
 class IsRegexMatch (BaseValidator):
 	"""
 	Only allow values that match a certain regular expression.
+	
+	For example::
+	
+		>>> v = IsRegexMatch('[a-z]+')
+		>>> v ('abcd')
+		'abcd'
+		>>> v ('')
+		Traceback (most recent call last):
+		...
+		ValueError: '' does not match the pattern '[a-z]+'
+		
 	"""
 	# TODO: compile flags?
 	def __init__ (self, patt):
@@ -72,14 +116,30 @@ class IsRegexMatch (BaseValidator):
 		"""
 		Generate an meaningful error message for an empty value.
 		"""
-		return "'%s' does not match the regex '%s'" % (bad_val, self.patt)
+		return "'%s' does not match the pattern '%s'" % (bad_val, self.patt)
 
 
 class IsPlainText(IsRegexMatch):
 	"""
 	Check the value only contains alphanumerics, underscores & hyphen.
 	
-	Useful for checking identifiers. Idea linched from FormEncode.
+	Useful for checking identifiers.
+	
+	For example::
+	
+		>>> v = IsPlainText()
+		>>> v ('abcd')
+		'abcd'
+		>>> v ('ab cd')
+		Traceback (most recent call last):
+		...
+		ValueError: 'ab cd' is not plain text
+		>>> v ('ab!cd')
+		Traceback (most recent call last):
+		...
+		ValueError: 'ab!cd' is not plain text
+		
+	Idea flinched from FormEncode.
 	"""
 	def __init__ (self):
 		IsRegexMatch.__init__ (self, r'^[a-zA-Z_\-0-9]*$')
@@ -101,11 +161,28 @@ class ToCanonical (BaseValidator):
 	converting letters to uppercase and converting internal stretches of spaces,
 	underscores and hyphens to a single underscore. Thus, all of the previous 
 	values would be converted to 'FOO_BAR'.
+	
+	For example::
+	
+		>>> v = ToCanonical()
+		>>> v ('aBcD')
+		'ABCD'
+		>>> v ('  ab cd_')
+		'AB_CD_'
+		>>> v ('AB-_ CD')
+		'AB_CD'
+		
 	"""
 	def convert_value (self, value):
-		new_val = value.strip().upper()
-		new_val = CANON_SPACE_RE.sub ('_', value)
-		return new_val
+		return impl.make_canonical (value)
+
+
+
+## DEBUG & TEST ###
+
+if __name__ == "__main__":
+	import doctest
+	doctest.testmod()
 
 
 
