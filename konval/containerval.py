@@ -92,10 +92,8 @@ class CheckLength (BaseValidator):
 			assert self.min <= len (value), "'%s' is shorter than %s" % (value, self.min)
 		if self.max is not None:
 			assert len (value) <= self.max, "'%s' is longer than %s" % (value, self.max)
+		return True
 
-
-# TODO: min & max length
-# TODO: membership 
 
 class IsEmpty(CheckLength):
 	"""
@@ -175,7 +173,7 @@ class IsMember (BaseValidator):
 		return "'%s' is not a member of %s" % (bad_val, self.vocab)
 
 	def validate_value (self, value):
-		assert (value in self.vocab)
+		return value in self.vocab
 
 
 class ToIndex (BaseValidator):

@@ -61,7 +61,7 @@ class Vocab (BaseValidator):
 				transformation)
 			canonize : bool
 				should all values be transformed to a canonical form
-			allow_others : bool
+			allow_other : bool
 				allow non-listed values
 				
 		:Returns:

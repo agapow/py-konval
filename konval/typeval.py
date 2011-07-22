@@ -215,8 +215,7 @@ class IsInstance (BaseValidator):
 		self.allowed_classes = tuple (impl.make_list (allowed_classes))
 	
 	def validate_value (self, value):
-		if not isinstance (value, self.allowed_classes):
-			self.raise_validation_error (bad_val, None)
+		return isinstance (value, self.allowed_classes)
 		
 	def make_validation_error_msg (self, bad_val, err):
 		# TODO: shift to base class
@@ -250,8 +249,9 @@ class IsType (BaseValidator):
 	def validate_value (self, value):
 		for t in self.allowed_classes:
 			if type(value) is t:
-				return
-		self.raise_validation_error (bad_val, None)
+				return True
+		return False
+		#self.raise_validation_error (bad_val, None)
 		
 	def make_validation_error_msg (self, bad_val, err):
 		# TODO: shift to base class
@@ -291,7 +291,7 @@ class StrToBool (Synonyms):
 		return Synonyms.convert_value (self, value.strip().upper())
 		
 	def validate_value (self, value):
-		assert value in defs.TRUE_FALSE_DICT.keys()
+		return value in defs.TRUE_FALSE_DICT.keys()
 		
 	def make_validation_error_msg (self, bad_val, err):
 		return "can't recognise %s' as true or false" % (bad_val)

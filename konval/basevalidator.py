@@ -14,7 +14,7 @@ import impl
 
 __all__ = [
 	'BaseValidator',
-	'CustomValidator',
+	'WrappingValidator',
 ]
 
 
@@ -142,8 +142,10 @@ class BaseValidator (object):
 		# NOTE: override in subclass
 		# probably a series of assertions
 		try:
-			self.validate_value (value)
-			return
+			if self.validate_value (value):
+				return
+			else:
+				raise
 		except exceptions.Exception, err:
 			self.raise_validation_error (value, err)
 		except:
@@ -156,13 +158,16 @@ class BaseValidator (object):
 		:Parameters:
 			value
 				value to be checked
+				
+		:Returns:
+			success of validation. 
 		
 		This is the workhorse method that is called by `validate` to check
-		passed values. As such, errors are signalled by throwing a meaningful
-		exception. This is one of the obvious and easiest places to customize
-		behaviour by overriding in a subclass.
+		passed values. As such, errors are signalled by either by throwing a 
+		meaningful exception or by returning false. This is one of the obvious 
+		and easiest places to customize behaviour by overriding in a subclass.
 		"""
-		pass
+		return True
 	
 	def raise_validation_error (self, bad_val, err):
 		"""
@@ -192,8 +197,58 @@ class BaseValidator (object):
 		return "can't validate '%s'" % (bad_val)
 
 
-class CustomValidator (BaseValidator):
+class WrappingValidator (BaseValidator):
+	"""
+	Wraps functions and possible error messages in a validator.
+	
+	This allows converting and validating functions to be easily encapsulated
+	in a validator. Given the design of konval (any function that accepts & 
+	returns a value can be used as a validator), this  is only slightly useful.
+	However it does allow useful error messages to be incorporated.
+	
+	For example::
+	
+		>>> from string import *
+		>>> v = WrappingValidator (conv_fn=upper, conv_msg='not a string')
+		>>> v('abc')
+		'ABC'
+		>>> v(1)
+		Traceback (most recent call last):
+		...
+		ValueError: not a string
+		>>> v = WrappingValidator (val_fn=lambda x: len(x) < 4)
+		>>> v('abc')
+		'abc'
+		>>> v(1)
+		Traceback (most recent call last):
+		...
+		ValueError: can't validate '1'
+		
+	Idea flinched from FormEncode.
+	
+	"""
+	
 	def __init__ (self, conv_fn=None, conv_msg=None, val_fn=None, val_msg=None):
+		"""
+		C'tor accepting functors for validation & conversion.
+		
+		:Parameters:
+			conv_fn : callable
+				performs conversion, should accept value and return transformed
+			conv_msg : str
+				string for error message in event of conversion failure
+			val_fn : callable
+				performs validation, should accept value and return success
+			val_msg : str
+				string for error message in event of validation failure
+		
+		`conv_fn` and `val_fn` can be any callable object (e.g. a class with
+		`__call__`, lambda). Note that validation function should return not the
+		value but validation success, or just raise an exception. Error
+		message strings can include the keyword substitutions 'bad_val' and 'err'
+		for the value that raised the exception and the exception itself.
+		"""
+		
 		self.conv_fn = conv_fn
 		self.conv_msg = conv_msg
 		self.val_fn = val_fn
@@ -209,17 +264,19 @@ class CustomValidator (BaseValidator):
 		if self.conv_msg:
 			return self.conv_msg % {'bad_val': bad_val, 'err': err}
 		else:
-			return BaseValidator.make_conversion_error_msg (bad_val, err)
+			return BaseValidator.make_conversion_error_msg (self, bad_val, err)
 	
 	def validate_value (self, value):
 		if self.val_fn:
-			self.val_fn (value)
+			return self.val_fn (value)
+		else:
+			return True
 		
 	def make_validation_error_msg (self, bad_val, err):
 		if self.val_msg:
 			return self.val_msg % {'bad_val': bad_val, 'err': err}
 		else:
-			return BaseValidator.make_validation_error_msg (bad_val, err)
+			return BaseValidator.make_validation_error_msg (self, bad_val, err)
 
 
 

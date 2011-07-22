@@ -87,6 +87,7 @@ class IsNonblank (BaseValidator):
 	def validate_value (self, value):
 		assert isinstance (value, basestring)
 		assert 0 < len(value), "can't be a blank string"
+		return True
 
 
 class IsRegexMatch (BaseValidator):
@@ -110,7 +111,7 @@ class IsRegexMatch (BaseValidator):
 		self.patt = patt
 
 	def validate_value (self, value):
-		assert self.re.match (value)
+		return self.re.match (value)
 
 	def make_validation_error_msg (self, bad_val, err):
 		"""

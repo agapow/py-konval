@@ -28,6 +28,7 @@ class IsInRange (BaseValidator):
 			assert self.min <= value, "%s is lower than %s" % (value, self.min)
 		if self.max is not None:
 			assert value <= self.max, "%s is higher than %s" % (value, self.max)
+		return True
 			
 	def make_validation_error_msg (self, bad_val, err):
 		"""
@@ -67,8 +68,9 @@ class IsBetween (IsInRange):
 			assert self.min < value, "%s is lower or equal to %s" % (value, self.min)
 		if self.max is not None:
 			assert value < self.max, "%s is higher or equal to %s" % (value, self.max)
+		return True
 
-ExclusiveReange = IsBetween
+ExclusiveRange = IsBetween
 
 
 class Length (BaseValidator):
@@ -97,6 +99,7 @@ class Length (BaseValidator):
 			assert self.min <= len (value), "%s is shorter than %s" % (value, self.min)
 		if self.max is not None:
 			assert len (value) <= self.max, "%s is longer than %s" % (value, self.max)
+		return True
 
 
 

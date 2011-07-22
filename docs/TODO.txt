@@ -1,0 +1,20 @@
+To do & bugs
+------------
+
+XXX: name is not great
+
+XXX: is assert functionality worthwhile?
+
+XXX: CustomValidator is poor name
+
+TODO: unify naming scheme
+
+TODO: how to handle negation
+
+XXX: is there a better way to make_list?
+
+XXX: everything in the one namespace?
+
+TODO: email, url, etc. validators
+
+TODO: toRegex or ToRegexSub (for subpatterns) & regex transformations
