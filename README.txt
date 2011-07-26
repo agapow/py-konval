@@ -71,7 +71,7 @@ exceptions being thrown::
 	>>> sanitize ('one', ToInt())
 	Traceback (most recent call last)
 	...
-	ValueError: can't convert '1.0' to integer
+	ValueError: can't convert 'one' to integer
 	
 A single validator or list can be passed to `sanitize`. Failure in any will
 result in any exception::

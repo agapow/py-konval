@@ -35,6 +35,7 @@ from sizeval import *
 from containerval import *
 from vocabval import *
 from stringval import *
+from logicval import *
 
 
 ### CONSTANTS & DEFINES
