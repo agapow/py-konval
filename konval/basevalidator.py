@@ -203,27 +203,9 @@ class WrappingValidator (BaseValidator):
 	
 	This allows converting and validating functions to be easily encapsulated
 	in a validator. Given the design of konval (any function that accepts & 
-	returns a value can be used as a validator), this  is only slightly useful.
+	returns a value can be used as a validator), this is only slightly useful.
 	However it does allow useful error messages to be incorporated.
 	
-	For example::
-	
-		>>> from string import *
-		>>> v = WrappingValidator (conv_fn=upper, conv_msg='not a string')
-		>>> v('abc')
-		'ABC'
-		>>> v(1)
-		Traceback (most recent call last):
-		...
-		ValueError: not a string
-		>>> v = WrappingValidator (val_fn=lambda x: len(x) < 4)
-		>>> v('abc')
-		'abc'
-		>>> v(1)
-		Traceback (most recent call last):
-		...
-		ValueError: can't validate '1'
-		
 	Idea flinched from FormEncode.
 	
 	"""
@@ -277,15 +259,3 @@ class WrappingValidator (BaseValidator):
 			return self.val_msg % {'bad_val': bad_val, 'err': err}
 		else:
 			return BaseValidator.make_validation_error_msg (self, bad_val, err)
-
-
-
-## DEBUG & TEST ###
-
-if __name__ == "__main__":
-	import doctest
-	doctest.testmod()
-
-
-
-### END #######################################################################
