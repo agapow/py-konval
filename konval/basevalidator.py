@@ -143,7 +143,7 @@ class BaseValidator (object):
 		# probably a series of assertions
 		try:
 			if self.validate_value (value):
-				return
+				return value
 			else:
 				raise
 		except exceptions.Exception, err:
@@ -229,6 +229,10 @@ class WrappingValidator (BaseValidator):
 		value but validation success, or just raise an exception. Error
 		message strings can include the keyword substitutions 'bad_val' and 'err'
 		for the value that raised the exception and the exception itself.
+
+		-- Might be cleaner to have the convert_value method catch all exceptions
+		-- and wrap the message / type into the validation_error class rather than
+		-- making the custom function code specify it each time manually. -PME
 		"""
 		
 		self.conv_fn = conv_fn
