@@ -71,7 +71,7 @@ class ToUpper (BaseValidator):
 
 class IsNonblank (BaseValidator):
 	"""
-	Only allow  non-blank strings (i.e. those with a length more than 0).
+	Only allow non-blank strings (i.e. those with a length more than 0).
 	
 	For example::
 	
@@ -176,17 +176,3 @@ class ToCanonical (BaseValidator):
 	"""
 	def convert_value (self, value):
 		return impl.make_canonical (value)
-
-
-
-## DEBUG & TEST ###
-
-if __name__ == "__main__":
-	import doctest
-	doctest.testmod()
-
-
-
-
-
-### END #######################################################################

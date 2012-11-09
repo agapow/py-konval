@@ -30,7 +30,7 @@ class TestContainerVal(unittest.TestCase):
 		self.assertEqual(l, 15)
 
 		# set
-		l = v(set(['a', 'b', 'c']))
+		l = v({'a', 'b', 'c'})
 		self.assertEqual(l, 3)
 
 		# bytearray

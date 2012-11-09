@@ -91,15 +91,3 @@ def make_canonical (value):
 	new_val = value.strip().upper()
 	new_val = defs.CANON_SPACE_RE.sub ('_', new_val)
 	return new_val
-
-
-
-## DEBUG & TEST ###
-
-if __name__ == "__main__":
-	import doctest
-	doctest.testmod()
-
-
-
-### END #######################################################################

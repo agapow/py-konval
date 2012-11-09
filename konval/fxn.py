@@ -42,25 +42,9 @@ def sanitize (val, validators):
 	The core service method for konval, this can be used to check and convert
 	data. Note that this accepts a single value - if you want to sanitize a 
 	whole list in the same way, use a list comprehension.
-	
-	For example::
-	
-		>>> sanitize (1, int)
-		1
-		>>> from konval import IsEqualOrMore, ToLength
-		>>> sanitize ('2', [float, IsEqualOrMore(1)])
-		2.0
-		>>> x = sanitize (['a', 'b'], [ToLength(), float, IsEqualOrMore(1)])
-		>>> x
-		2.0
-		>>> sanitize (['a', 'b'], [ToLength(), float, IsEqualOrMore(3)])
-		Traceback (most recent call last):
-		...
-		ValueError: 2.0 is lower than 3
-
-		
 				
 	"""
+
 	for c in impl.make_list (validators):
 		val = c(val)
 	return val

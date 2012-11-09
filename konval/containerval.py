@@ -19,10 +19,22 @@ class ToLength (BaseValidator):
 	"""
 	Convert a sequence to its length.
 
+	--- len() obviously does not work on integers, fix applied
+	--- not using the built in raise_exception methods because
+	--- they strike me as redunant and inflexible as an alternative
+	--- to using the standard library
+
 	"""
 	
 	def convert_value (self, value):
-		return len (value)
+		try:
+			length = len(value)
+			return length
+		except TypeError as e:
+			if isinstance(value, int):
+				return self.convert_value(str(value))
+
+		raise ValueError('Could not get length of "%s" of type %s' % (value, type(value)))
 
 
 class CheckLength (BaseValidator):
@@ -33,19 +45,10 @@ class CheckLength (BaseValidator):
 	This is most useful for strings, but could be used for lists.
 	
 	"""
+
 	def __init__ (self, min=None, max=None):
 		self.min = min
 		self.max = max
-
-	def make_validation_error_msg (self, bad_val, err):
-		"""
-		Generate an meaningful error message for a length problem.
-		"""
-		if err:
-			return str (err)
-		else:
-			return BaseValidator.make_validation_error_msg (self, bad_val, err)
-		
 
 	def validate_value (self, value):
 		if self.min is not None:
@@ -60,14 +63,9 @@ class IsEmpty(CheckLength):
 	Checks the value is empty (an empty string, list, etc.)
 	
 	"""
+
 	def __init__ (self):
 		CheckLength.__init__ (self, max=0)
-		
-	def make_validation_error_msg (self, bad_val, err):
-		"""
-		Generate an meaningful error message for an empty value.
-		"""
-		return "'%s' is not empty" % (bad_val)
 
 
 class IsNotEmpty(CheckLength):
@@ -78,17 +76,9 @@ class IsNotEmpty(CheckLength):
 	Debatable whether that should be considered empty or not...
 	
 	"""
+
 	def __init__ (self):
 		CheckLength.__init__ (self, min=1)
-		
-	def make_validation_error_msg (self, bad_val, err):
-		"""
-		Generate an meaningful error message for an empty value.
-		An empty tuple here results in a type error during the return statement
-		-- fixing by typing the bad_val. -PME
-
-		"""
-		return "'%s' is empty" % (type(bad_val))
 
 
 class IsMember (BaseValidator):
@@ -99,14 +89,9 @@ class IsMember (BaseValidator):
 	This is most useful for strings, but could be used for lists.
 	
 	"""
+
 	def __init__ (self, vocab):
 		self.vocab = vocab
-
-	def make_validation_error_msg (self, bad_val, err):
-		"""
-		Generate an meaningful error message for a membership problem.
-		"""
-		return "'%s' is not a member of %s" % (bad_val, self.vocab)
 
 	def validate_value (self, value):
 		return value in self.vocab
@@ -120,14 +105,9 @@ class ToIndex (BaseValidator):
 	This is most useful for strings, but could be used for lists.
 	
 	"""
+
 	def __init__ (self, vocab):
 		self.vocab = vocab
-	
-	def make_conversion_error_msg (self, bad_val, err):
-		"""
-		Generate an meaningful error message for a membership problem.
-		"""
-		return "'%s' is not a member of %s" % (bad_val, self.vocab)
 
 	def convert_value (self, value):
 		return self.vocab.index (value)

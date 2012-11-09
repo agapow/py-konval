@@ -47,8 +47,3 @@ for v in FALSE_STRS:
 	TRUE_FALSE_DICT[v] = False
 
 CANON_SPACE_RE = re.compile (r'[\-_\s]+')
-
-
-### IMPLEMENTATION ###
-
-### END #######################################################################
