@@ -5,9 +5,6 @@ Various module-wide constants.
 
 __docformat__ = "restructuredtext en"
 
-
-### IMPORTS
-
 import re
 
 __all__ = [
@@ -15,8 +12,6 @@ __all__ = [
 	'CANON_SPACE_RE',
 ]
 
-
-### CONSTANTS & DEFINES
 
 TRUE_STRS = [
 	'TRUE',
