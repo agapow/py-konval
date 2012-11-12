@@ -4,6 +4,7 @@ from konval.containerval import ToLength, IsNotEmpty
 
 class TestFxn(unittest.TestCase):
 
+	"""
 	def test_sanitize(self):
 		r = sanitize(1, int)
 		self.assertEquals(r, 1)
@@ -21,3 +22,5 @@ class TestFxn(unittest.TestCase):
 
 		with self.assertRaises(ValueError):
 			r = sanitize([], validators)
+
+	"""
