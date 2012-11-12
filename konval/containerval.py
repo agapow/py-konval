@@ -27,7 +27,7 @@ class ToLength (BaseValidator):
 		raise ConversionError('Could not get length of "%s" of type %s' % (value, type(value)))
 
 
-class CheckLength (BaseValidator):
+class LengthRange (BaseValidator):
 	"""
 	Only allow values of a certain sizes.
 
@@ -43,14 +43,14 @@ class CheckLength (BaseValidator):
 		length = ToLength().convert(value)
 		
 		if self.min is not None and length < self.min:
-			raise ValidationError('The value %s is less than the required minimum: %s', (value, self.min))
+			raise ValidationError('The value %s is less than the required minimum: %s' % (value, self.min))
 		if self.max is not None and length > self.max:
-			raise ValidationError('The value %s is greater than the required minimum: %s', (value, self.max))
+			raise ValidationError('The value %s is greater than the required maximum: %s' % (value, self.max))
 		
 		return True
 
 
-class IsEmpty(CheckLength):
+class IsEmpty(BaseValidator):
 	"""
 	Checks the value is empty (an empty string, list, etc.)
 
@@ -62,13 +62,13 @@ class IsEmpty(CheckLength):
 
 	def validate_value(self, value):
 		try:
-			CheckLength(max=0).validate(value)
+			LengthRange(max=0).validate(value)
 			return True
 		except ValidationError:
-			raise ValidationError('The value %s is not empty.', value)
+			raise ValidationError('The specified "%s" is not empty.' % type(value))
 
 
-class IsNotEmpty(CheckLength):
+class IsNotEmpty(BaseValidator):
 	"""
 	Checks the value is not empty (a nonblank string, list with items, etc.)
 	
@@ -78,10 +78,10 @@ class IsNotEmpty(CheckLength):
 
 	def validate_value(self, value):
 		try:
-			CheckLength(min=1).validate(value)
+			LengthRange(min=1).validate(value)
 			return True
 		except ValidationError:
-			raise ValidationError('The value %s is empty.', value)
+			raise ValidationError('The specified "%s" is empty.' % type(value))
 
 
 class IsMember (BaseValidator):
@@ -96,7 +96,7 @@ class IsMember (BaseValidator):
 	def validate_value(self, member):
 		if member in self.club:
 			return True
-		raise ValidationError('The supplied value %s, is not a member of the specified club: %s', (member, self.club))
+		raise ValidationError('The supplied value %s, is not a member of the specified club: %s' % (member, self.club))
 		
 
 

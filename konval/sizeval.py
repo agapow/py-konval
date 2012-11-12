@@ -1,114 +1,56 @@
 """
 Validators that check value magnitude.
 
+-- Note: removed Length() validator as it was a duplicate of CheckLength(), now renamed to LengthRange()
+
 """
 
 __docformat__ = "restructuredtext en"
 
-
-### IMPORTS
-
-from basevalidator import BaseValidator
+from basevalidator import BaseValidator, ValidationError, ConversionError
 
 
-### CONSTANTS & DEFINES
-
-### IMPLEMENTATION ###
-
-class IsInRange (BaseValidator):
+class Range(BaseValidator):
 	"""
 	Only allow values between certain inclusive bounds.
+	
 	"""
+
 	def __init__ (self, min=None, max=None):
 		self.min = min
 		self.max = max
 
-	def validate_value (self, value):
-		if self.min is not None:
-			assert self.min <= value, "%s is lower than %s" % (value, self.min)
-		if self.max is not None:
-			assert value <= self.max, "%s is higher than %s" % (value, self.max)
+	def validate_value(self, value):
+		if self.min is not None and value < self.min:
+			raise ValidationError('The specified value %s is below the required minimum %s' % (value, self.min))
+		if self.max is not None and value > self.max:
+			raise ValidationError('The specified value %s is above the required maximum %s' % (value, self.max))
+		
 		return True
-			
-	def make_validation_error_msg (self, bad_val, err):
-		"""
-		Generate an meaningful error message for a range problem.
-		"""
-		if err:
-			return str (err)
-		else:
-			return BaseValidator.make_validation_error_msg (self, bad_val, err)
 
-Range = IsInRange
+class MinVal(Range):
+	def __init__ (self, minimum):
+		super(MinVal, self).__init__(min=minimum)
 
 
-class IsEqualOrMore (IsInRange):
-	def __init__ (self, min):
-		IsInRange.__init__ (self, min=min, max=None)
+class MaxVal(Range):
+	def __init__ (self, maximum):
+		super(MaxVal, self).__init__(max=maximum)
 
-MinValue = IsEqualOrMore
-
-
-class IsEqualOrLess (IsInRange):
-	def __init__ (self, max):
-		IsInRange.__init__ (self, min=None, max=max)
-
-MaxValue = IsEqualOrLess
-
-
-class IsBetween (IsInRange):
+class Between(BaseValidator):
 	"""
 	Only allow values between certain exclusive bounds.
+
 	"""
-	def __init__ (self, min=None, max=None):
-		IsInRange.__init__ (min=min, max=max)
 
-	def validate_value (self, value):
-		if self.min is not None:
-			assert self.min < value, "%s is lower or equal to %s" % (value, self.min)
-		if self.max is not None:
-			assert value < self.max, "%s is higher or equal to %s" % (value, self.max)
-		return True
-
-ExclusiveRange = IsBetween
-
-
-class Length (BaseValidator):
-	"""
-	Only allow values of a certain sizes.
-
-	Length limitations are expressed as (inclusive) minimum and maximum sizes.
-	This is most useful for strings, but could be used for lists.
-	"""
-	def __init__ (self, min=None, max=None):
+	def __init__(self, min=None, max=None):
 		self.min = min
 		self.max = max
 
-	def make_validation_error_msg (self, bad_val, err):
-		"""
-		Generate an meaningful error message for a length problem.
-		"""
-		if err:
-			return str (err)
-		else:
-			return BaseValidator.make_validation_error_msg (self, bad_val, err)
+	def validate_value(self, value):
+		if self.min is not None and value <= self.min:
+			raise ValidationError('The specified value %s is not within lower bound %s' % (value, self.min))
+		if self.max is not None and value >= self.max:
+			raise ValidationError('The specified value %s is not within upper bound %s' % (value, self.max))
 		
-
-	def validate_value (self, value):
-		if self.min is not None:
-			assert self.min <= len (value), "%s is shorter than %s" % (value, self.min)
-		if self.max is not None:
-			assert len (value) <= self.max, "%s is longer than %s" % (value, self.max)
 		return True
-
-
-
-## DEBUG & TEST ###
-
-if __name__ == "__main__":
-	import doctest
-	doctest.testmod()
-
-
-
-### END #######################################################################

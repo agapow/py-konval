@@ -42,8 +42,8 @@ class TestContainerVal(unittest.TestCase):
 		l = v(xrange(5))
 		self.assertEqual(l, 5)
 
-	def test_checklength(self):
-		v = CheckLength(min=5, max=10)
+	def test_lengthrange(self):
+		v = LengthRange(min=5, max=10)
 
 		with self.assertRaises(ValidationError):
 			v([1, 2])
