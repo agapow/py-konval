@@ -5,9 +5,6 @@ Abstract base class for easy construction of validators.
 
 __docformat__ = "restructuredtext en"
 
-
-### IMPORTS
-
 import exceptions
 
 import impl
@@ -16,11 +13,6 @@ __all__ = [
 	'BaseValidator',
 	'WrappingValidator',
 ]
-
-
-### CONSTANTS & DEFINES
-
-### IMPLEMENTATION ###
 
 class BaseValidator (object):
 	"""

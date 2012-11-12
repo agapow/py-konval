@@ -1,4 +1,4 @@
-Metadata-Version: 1.0
+Metadata-Version: 1.1
 Name: konval
 Version: 0.1dev
 Summary: Routines for data validation & conversion
@@ -38,7 +38,7 @@ Description: ============
         ------
         
         *konval* is in an exploratory state, having been produced to support another
-        package and see if use can be got out of generalising conversion. As such. it
+        package and see if use can be got out of generalising conversion. As such. it 
         is still an early release and the API may change. Comment is invited.
         
         
@@ -48,13 +48,13 @@ Description: ============
         The simplest way to install *konval* is via ``easy_install`` [setuptools]_ or an
         equivalent program::
         
-        % easy_install konval
+        	% easy_install konval
         
         Alternatively the tarball can be downloaded, unpacked and ``setup.py`` run::
         
-        % tar zxvf konval.tgz
-        % cd konval
-        % python set.py install
+        	% tar zxvf konval.tgz
+        	% cd konval
+        	% python set.py install
         
         *konval* has no prerequisites and should work with just about any version of
         Python.
@@ -72,50 +72,50 @@ Description: ============
         Most commonly, konval will be used to check or clean values. Failures result in
         exceptions being thrown::
         
-        # convert user input to a actual integer
-        >>> from konval import *
-        >>> sanitize ('1.0', ToInt())
-        1
-        >>> sanitize ('one', ToInt())
-        Traceback (most recent call last)
-        ...
-        ValueError: can't convert '1.0' to integer
-        
+        	# convert user input to a actual integer
+        	>>> from konval import *
+        	>>> sanitize ('1.0', ToInt())
+        	1
+        	>>> sanitize ('one', ToInt())
+        	Traceback (most recent call last)
+        	...
+        	ValueError: can't convert 'one' to integer
+        	
         A single validator or list can be passed to `sanitize`. Failure in any will
         result in any exception::
         
-        # check a list has no more than 3 members
-        >>> sanitize (['a', 'b', 'c'], [ToLength(),IsEqualOrLess(3)])
-        3
-        # check a password is long enough
-        >>> sanitize ('mypass', [ToLength(),IsEqualOrMore(8)])
-        Traceback (most recent call last)
-        ...
-        ValueError: 6 is lower than 8
+        	# check a list has no more than 3 members
+        	>>> sanitize (['a', 'b', 'c'], [ToLength(),IsEqualOrLess(3)])
+        	3
+        	# check a password is long enough
+        	>>> sanitize ('mypass', [ToLength(),IsEqualOrMore(8)])
+        	Traceback (most recent call last)
+        	...
+        	ValueError: 6 is lower than 8
         
         Any callable object that accepts and returns a single value can be used as a
         validator::
-        
-        >>> from string import *
-        >>> sanitize (" my title ", [strip, capitalize])
-        'My title'
+        	
+        	>>> from string import *
+        	>>> sanitize (" my title ", [strip, capitalize])
+        	'My title'
         
         A rich library of prebuilt validators is supplied::
         
-        >>> sanitize ('abcde', IsNonblank())
-        'abcde'
-        >>> sanitize (5, IsInRange(1,6))
-        5
-        >>> sanitize ('foo', Synonyms({'foo': 'bar', 'baz': 'quux'}))
-        'bar'
+        	>>> sanitize ('abcde', IsNonblank())
+        	'abcde'
+        	>>> sanitize (5, IsInRange(1,6))
+        	5
+        	>>> sanitize ('foo', Synonyms({'foo': 'bar', 'baz': 'quux'}))
+        	'bar'
         
         Custom validators can easily be subclassed from a supplied base class::
         
-        class IsFoo (BaseValidator):
-        def validate_value (self, value):
-        if value != 'foo':
-        self.raise_validation_error (value)
-        return True
+        	class IsFoo (BaseValidator):
+        		def validate_value (self, value):
+        			if value != 'foo':
+        				self.raise_validation_error (value)
+        			return True
         
         
         Limitations
@@ -131,7 +131,7 @@ Description: ============
         1. there's already a Python library called "sanity"
         
         2. out of "valcon", "valkon", "conval" etc. it was the one with the fewest hits
-        on Google
+           on Google
         
         
         References
