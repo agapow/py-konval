@@ -5,51 +5,36 @@ Validators that clean or transform strings.
 
 __docformat__ = "restructuredtext en"
 
-
-### IMPORTS
-
 import re
 
 import impl
-from basevalidator import BaseValidator
+from basevalidator import BaseValidator, ValidationError, ConversionError
 
 
-### CONSTANTS & DEFINES
-
-### IMPLEMENTATION ###
-
-class Strip (BaseValidator):
+class Strip(BaseValidator):
 	"""
 	Transform strings by stripping flanking space.
-	
-	Note that this does not explicitly throw errors.
-	
-	For example::
-	
-		>>> v = Strip()
-		>>> v ('  abc  ')
-		'abc'
-		
+			
 	"""
-	def convert_value (self, value):
-		return value.strip()
+
+	def convert_value(self, value):
+		try:
+			stripped = value.strip()
+			return stripped
+		except:
+			raise ConversionError('Cannot strip spaces from %s' % (type(value))
 
 
-class ToLower (BaseValidator):
+class ToLower(BaseValidator):
 	"""
 	Transform strings by converting to lower case.
 	
-	Note that this does not explicitly throw errors.
-	
-	For example::
-	
-		>>> v = ToLower()
-		>>> v ('aBcD')
-		'abcd'
-	
 	"""
+
 	def convert_value (self, value):
-		return value.lower()
+		# lower case and return
+
+
 
 
 class ToUpper (BaseValidator):

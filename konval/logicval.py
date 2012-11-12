@@ -23,7 +23,7 @@ class Or (BaseValidator):
 		self.validators = validators
 		self.default = default
 	
-	def convert_value (self, value):
+	def convert_value(self, value):
 		"""
 		If any validator succeeds, return the result, else default.
 
