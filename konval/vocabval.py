@@ -6,15 +6,9 @@ Validators that remap values or check vocabulary membership.
 __docformat__ = "restructuredtext en"
 
 
-### IMPORTS
-
 import impl
 from basevalidator import BaseValidator
 
-
-### CONSTANTS & DEFINES
-
-### IMPLEMENTATION ###
 
 class Synonyms (BaseValidator):
 	"""
@@ -31,15 +25,6 @@ class Synonyms (BaseValidator):
 				
 		:Returns:
 			the mapped value or the original is no mapping available
-			
-		For example::
-		
-			>>> d = {'foo': 1, 'bar': 2}
-			>>> v = Synonyms(d)
-			>>> v('foo')
-			1
-			>>> v('quux')
-			'quux'
 			
 		"""
 		self._syns = d
@@ -116,16 +101,3 @@ class Vocab (BaseValidator):
 		Generate an meaningful error message for a membership problem.
 		"""
 		return "'%s' is not a member of %s" % (bad_val, self.conv_dict.keys())
-
-
-
-## DEBUG & TEST ###
-
-if __name__ == "__main__":
-	import doctest
-	doctest.testmod()
-
-
-
-
-### END #######################################################################
