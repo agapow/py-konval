@@ -3,18 +3,27 @@ To do & bugs
 
 XXX: name is not great
 
-XXX: is assert functionality worthwhile?
-
 XXX: CustomValidator is poor name
 
 TODO: unify naming scheme
 
 TODO: how to handle negation
 
-XXX: is there a better way to make_list?
-
 XXX: everything in the one namespace?
 
 TODO: email, url, etc. validators
 
 TODO: toRegex or ToRegexSub (for subpatterns) & regex transformations
+
+------------
+
+- Introduce validator dependencies (i.e. if V1 fails, skip V2)
+- Add internet validators (as above)
+- Rethink IsList to allow for non-canonical matching as well
+- Rethink Konval process states to potentially allow for non-valid,
+  partially processed values to be accessible.
+- Add about 20 more validators I can think of
+- Improve edge-case handling on many of the existing validators
+- Allow for multiple values through 1 validator (add support in base class)
+- Allow for overridable error messages for validator instances
+- Potentially create 2 types of error messages, user friendly and developer friendly?
