@@ -62,7 +62,11 @@ class IsNonBlank(BaseValidator):
 	"""
 
 	def validate_value (self, value):
-		s = Strip().convert(value)
+		try:
+			s = Strip().convert(value)
+		except ConversionError:
+			return False
+			
 		if len(s) <= 0:
 			raise ValidationError('The value "%s" is blank!' % value)
 		
@@ -109,19 +113,16 @@ class ToCanonical (BaseValidator):
 	"""
 	Reduce strings to a canonical form.
 	
-	A common problem in cleaning user input is to catch trivial variants, e.g.
-	how to recognise 'foo-bar', 'Foo-bar', ' foo-bar ' and 'foo_bar' as being
-	the same value. This function achieves that by stripping flanking spaces, 
-	converting letters to uppercase and converting internal stretches of spaces,
-	underscores and hyphens to a single underscore. Thus, all of the previous 
-	values would be converted to 'FOO_BAR'.
-	
+	Canonical for this library is as follows:
+	- Stripped spaces
+	- Underscores instead of dashes or spaces
+	- Lowercase
 		
 	"""
 
 	def convert_value(self, value):
 		try:
-			new_val = value.strip().upper()
+			new_val = value.strip().lower()
 			new_val = defs.CANON_SPACE_RE.sub ('_', new_val)
 			return new_val
 		except:

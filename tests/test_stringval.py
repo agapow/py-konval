@@ -83,7 +83,7 @@ class TestStringVal(unittest.TestCase):
 
 	def test_canonical(self):
 		v = ToCanonical()
-		c = 'FOO_BAR'
+		c = 'foo_bar'
 
 		s = 'foo-bar'
 		self.assertEqual(v(s), c)
@@ -94,10 +94,10 @@ class TestStringVal(unittest.TestCase):
 		s = ' foo-bar '
 		self.assertEqual(v(s), c)
 
-		s = 'foo_bar'
+		s = 'FOO_BAR'
 		self.assertEqual(v(s), c)
 
-		s = 'FOO_BAR'
+		s = 'foo_bar'
 		self.assertEqual(v(s), s)
 
 		s = 1337

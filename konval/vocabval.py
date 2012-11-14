@@ -7,97 +7,46 @@ __docformat__ = "restructuredtext en"
 
 
 import impl
-from basevalidator import BaseValidator
+from basevalidator import BaseValidator, ValidationError, ConversionError
+from stringval import ToCanonical
 
 
 class Synonyms (BaseValidator):
 	"""
 	Map values to other values.
 
-	Note that this does not explicitly throw errors. If a value is un-mapped,
-	it is simply returned.
 	"""
-	def __init__ (self, d):
-		"""
-		:Parameters:
-			d
-				a dictionary mapping input values to output values
-				
-		:Returns:
-			the mapped value or the original is no mapping available
-			
-		"""
-		self._syns = d
+
+	def __init__ (self, mapping):
+		self.mapping = mapping
 
 	def convert_value (self, value):
-		return self._syns.get (value, value)
+		if value not in self.mapping:
+			raise ConversionError('The value %s has no valid synonym mapping in %s' % (value, self.mapping))
+		
+		return self.mapping[value]
 
 
-class Vocab (BaseValidator):
+class InList(BaseValidator):
 	"""
-	Ensure values fall within a fixed set.
+	Ensure values fall within a pre-defined list.
+
+	Canonization here is always used for validation.
+	
+	Conversion will return the canonized value.
+
 	"""
 	
-	def __init__ (self, vocab, canonize=False, allow_other=False):
-		"""
-		:Parameters:
-			vocab
-				a sequence of permitted values or value pairs (input and
-				transformation)
-			canonize : bool
-				should all values be transformed to a canonical form
-			allow_other : bool
-				allow non-listed values
-				
-		:Returns:
-			the original value, mapped & canonized if supplied and requested
-			
-		For example::
-		
-			>>> d = ['foo', ['bar', 'baz'], 'quux']
-			>>> v = Vocab(d)
-			>>> v('foo')
-			'foo'
-			>>> v('bar')
-			'baz'
-			>>> v('corge')
-			Traceback (most recent call last):
-			...
-			ValueError: 'corge' is not a member of ['quux', 'foo', 'bar']
-			>>> v = Vocab(d, allow_other=True)
-			>>> v('corge')
-			'corge'
-			>>> v = Vocab(d, canonize=True, allow_other=True)
-			>>> v('foo')
-			'FOO'
-			>>> v('bar')
-			'BAZ'
-			>>> v('corge')
-			'CORGE'
-			
-			
-		"""
-		self.conv_dict = {}
-		for t in vocab:
-			t = impl.make_list (t)
-			if canonize:
-				k, v = impl.make_canonical(t[0]), impl.make_canonical(t[-1])
-			else:
-				k, v = t[0], t[-1]
-			self.conv_dict[k] = v
-		self.canonize = canonize
-		self.allow_other = allow_other
+	def __init__ (self, term_list):
+		self.term_list = term_list
 
-	def convert_value (self, value):
-		if self.canonize:
-			value = impl.make_canonical (value)
-		if self.allow_other:
-			return self.conv_dict.get (value, value)
-		else:
-			return self.conv_dict[value]
-			
-	def make_conversion_error_msg (self, bad_val, err):
-		"""
-		Generate an meaningful error message for a membership problem.
-		"""
-		return "'%s' is not a member of %s" % (bad_val, self.conv_dict.keys())
+	def validate_value (self, value):
+		v = ToCanonical().convert(value)
+		if v not in self.term_list:
+			raise ValidationError('Value %s is not in term list %s' % (value, self.term_list))
+
+		return True
+
+	def convert_value(self, value):
+		v = ToCanonical().convert(value)
+		return v

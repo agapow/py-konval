@@ -5,3 +5,18 @@ v0.1, 20110722
 ~~~~~~~~~~~~~~
 
 * Initial release
+
+v0.3, 20121113
+~~~~~~~~~~~~~~
+
+* Reworked internal exception handling
+* Replaced the fxn module with the Konval class
+* Removed redundant validators / converters (consolidated many)
+* Removed WrappingValidator since as long as the supplied object is callable it works.
+* Re-wrote many of the validators to deal better with TypeErrors, ValueErrors etc...
+* Introduced duck-type style error handling in many places
+* Changed order of operations to Validate -> Convert since Validate should always be against
+  raw input, not converted input
+* Wrote unittests for all validators as well as Konval service class
+* Reworked the vocabval validators to be less 'smart', prefer granular API
+  and clear usage guidelines over magical methods and syntactic sugar.

@@ -75,8 +75,8 @@ class IsType(BaseValidator):
 			for t in self.allowed_classes:
 				if type(value) is t:
 					return True
-		except:
-			pass
+		except TypeError:
+			raise Exception('You must use a list for allowed classes')
 	
 		raise ValidationError('The value %s is not any of the allowed types: %s' % (value, self.allowed_classes))		
 

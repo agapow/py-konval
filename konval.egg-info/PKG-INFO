@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: konval
-Version: 0.1dev
+Version: 0.3dev
 Summary: Routines for data validation & conversion
 Home-page: http://www.agapow.net/software/py-konval
 Author: Paul-Michael Agapow
@@ -31,16 +31,23 @@ Description: ============
         
         * a rich library of validation objects
         * base classes for easily producing custom validators
-        * functions for easily using validators in a variety of ways
-        
+        * The Konval service class for easily validating a data set
+          based on a predefined validator schema corresponding to input
+          value names.
         
         Status
         ------
         
-        *konval* is in an exploratory state, having been produced to support another
-        package and see if use can be got out of generalising conversion. As such. it 
-        is still an early release and the API may change. Comment is invited.
+        This release is now fairly stable and well tested (all validators covered by extensive unittests)
+        and the service class provides a very straight forward API for using the library.
         
+        The library can always use more validators, and the validator modules may be rearranged 
+        in the coming weeks but the fundamental structure of the library is pretty stable.
+        
+        Expecting to drive towards a 1.0 release over the next month that will include a rock-solid
+        API and at least 20-50 additional validators and covering tests.
+        
+        Detailed documentation will follow closely alongside the 1.0 release.
         
         Installation
         ------------
@@ -69,53 +76,38 @@ Description: ============
         Examples
         ~~~~~~~~
         
-        Most commonly, konval will be used to check or clean values. Failures result in
-        exceptions being thrown::
+        1) Using the validators directly.
         
-        	# convert user input to a actual integer
-        	>>> from konval import *
-        	>>> sanitize ('1.0', ToInt())
-        	1
-        	>>> sanitize ('one', ToInt())
-        	Traceback (most recent call last)
-        	...
-        	ValueError: can't convert 'one' to integer
-        	
-        A single validator or list can be passed to `sanitize`. Failure in any will
-        result in any exception::
+        >>> v = IsType([str, int])
+        >>> v('123')
+        '123'
+        v({'obviously': 'not', 'a': 'string or int'})
+        ValidationError('Value {'obviously': 'not', 'a': 'string or int'} is not in the list of allowed types [<type str>, <type int>]')
         
-        	# check a list has no more than 3 members
-        	>>> sanitize (['a', 'b', 'c'], [ToLength(),IsEqualOrLess(3)])
-        	3
-        	# check a password is long enough
-        	>>> sanitize ('mypass', [ToLength(),IsEqualOrMore(8)])
-        	Traceback (most recent call last)
-        	...
-        	ValueError: 6 is lower than 8
+        2) Using the Konval service class
+        >>> schema = {
+        			'name': [IsType([str]), IsNonBlank(), LengthRange(max=50)],
+        			'age': [IsType([int]), IsNotEmpty()],
+        			'gender': [IsType([str]), InList(['male', 'female', 'not sure'])], IsNonBlank()]
+        		 }
         
-        Any callable object that accepts and returns a single value can be used as a
-        validator::
-        	
-        	>>> from string import *
-        	>>> sanitize (" my title ", [strip, capitalize])
-        	'My title'
+        >>> k = Konval(schema)
+        >>> data_set = {'name': 'Peter', 'age': 37, 'gender': 'male'}
+        >>> k.process(data_set)
+        >>> k.is_valid()
+        True
+        >>> k.get_valid()
+        {'name': 'Peter', 'age': 37, 'gender': 'male'}
+        >>> data_set = {'name': 1337, 'age': 'clearly not a number', 'gender': 'unknown'}
+        >>> k.process(data_set)
+        >>> k.is_valid()
+        False
+        >>> k.get_valid()
+        {}
+        >>> k.get_errors()
+        {'name': <explanation of error>, 'age': <explanation of error>, 'gender': <explanation of error>}
         
-        A rich library of prebuilt validators is supplied::
         
-        	>>> sanitize ('abcde', IsNonblank())
-        	'abcde'
-        	>>> sanitize (5, IsInRange(1,6))
-        	5
-        	>>> sanitize ('foo', Synonyms({'foo': 'bar', 'baz': 'quux'}))
-        	'bar'
-        
-        Custom validators can easily be subclassed from a supplied base class::
-        
-        	class IsFoo (BaseValidator):
-        		def validate_value (self, value):
-        			if value != 'foo':
-        				self.raise_validation_error (value)
-        			return True
         
         
         Limitations
@@ -155,6 +147,21 @@ Description: ============
         ~~~~~~~~~~~~~~
         
         * Initial release
+        
+        v0.3, 20121113
+        ~~~~~~~~~~~~~~
+        
+        * Reworked internal exception handling
+        * Replaced the fxn module with the Konval class
+        * Removed redundant validators / converters (consolidated many)
+        * Removed WrappingValidator since as long as the supplied object is callable it works.
+        * Re-wrote many of the validators to deal better with TypeErrors, ValueErrors etc...
+        * Introduced duck-type style error handling in many places
+        * Changed order of operations to Validate -> Convert since Validate should always be against
+          raw input, not converted input
+        * Wrote unittests for all validators as well as Konval service class
+        * Reworked the vocabval validators to be less 'smart', prefer granular API
+          and clear usage guidelines over magical methods and syntactic sugar.
 Keywords: validation conversion
 Platform: UNKNOWN
 Classifier: Development Status :: 3 - Alpha

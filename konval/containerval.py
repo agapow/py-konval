@@ -82,33 +82,3 @@ class IsNotEmpty(BaseValidator):
 			return True
 		except ValidationError:
 			raise ValidationError('The specified "%s" is empty.' % type(value))
-
-
-class IsMember (BaseValidator):
-	"""
-	Only allow values of a particular sequence.
-	
-	"""
-
-	def __init__(self, club):
-		self.club = club
-
-	def validate_value(self, member):
-		if member in self.club:
-			return True
-		raise ValidationError('The supplied value %s, is not a member of the specified club: %s' % (member, self.club))
-		
-
-
-class ToIndex (BaseValidator):
-	"""
-	Return the index of the item in a sequence.
-
-	"""
-
-	def __init__ (self, seq):
-		self.seq = seq
-
-	def convert_value (self, value):
-		if IsMember(self.seq).validate(value):
-			return self.seq.index(value)
