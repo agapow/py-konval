@@ -67,7 +67,5 @@ class TestKonval(unittest.TestCase):
 		self.assertEqual(self.kv.get_valid(), {})
 		self.assertEqual(self.kv.get_errors().keys(), ['gender', 'age', 'name'])
 
-		print self.kv.get_errors()
-
 if __name__ == '__main__':
 	unittest.main()
