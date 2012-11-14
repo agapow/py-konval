@@ -5,9 +5,6 @@ Various module-wide constants.
 
 __docformat__ = "restructuredtext en"
 
-
-### IMPORTS
-
 import re
 
 __all__ = [
@@ -15,8 +12,6 @@ __all__ = [
 	'CANON_SPACE_RE',
 ]
 
-
-### CONSTANTS & DEFINES
 
 TRUE_STRS = [
 	'TRUE',
@@ -47,8 +42,3 @@ for v in FALSE_STRS:
 	TRUE_FALSE_DICT[v] = False
 
 CANON_SPACE_RE = re.compile (r'[\-_\s]+')
-
-
-### IMPLEMENTATION ###
-
-### END #######################################################################
