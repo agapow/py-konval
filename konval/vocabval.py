@@ -9,6 +9,7 @@ __docformat__ = "restructuredtext en"
 import impl
 from basevalidator import BaseValidator, ValidationError, ConversionError
 from stringval import ToCanonical
+import defs
 
 
 class Synonyms (BaseValidator):
@@ -31,7 +32,8 @@ class InList(BaseValidator):
 	"""
 	Ensure values fall within a pre-defined list.
 
-	Canonization here is always used for validation.
+	Canonization here is always used for validation,
+	but value is returned as inputted.
 	
 	Conversion will return the canonized value.
 
@@ -50,3 +52,23 @@ class InList(BaseValidator):
 	def convert_value(self, value):
 		v = ToCanonical().convert(value)
 		return v
+
+class ToYesOrNo(Synonyms):
+	"""
+	Determines whether input is affirmative or negative based on
+	the common English language interpretations of words and
+	abbreviations as defined in the defs module.
+		
+	"""
+
+	def __init__ (self):
+		super(ToYesOrNo, self).__init__(defs.TRUE_FALSE_DICT)
+
+	def convert_value (self, value):
+		try:
+			result = super(ToYesOrNo, self).convert_value(value.strip().upper())
+			return result
+		except:
+			pass
+
+		raise ConversionError('The value %s could not be determined as Yes or No' % value)

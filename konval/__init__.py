@@ -19,28 +19,15 @@ handled by passing raw data through a chain of validators. In this spirit,
 
 """
 
-__version__ = "0.1"
+__version__ = "0.3"
 __author__ = "Paul-Michael Agapow"
 __email__ = "pma@agapow.net"
 
 
-### IMPORTS
-
-from fxn import *
 from basevalidator import *
-from typeval import *
 from containerval import *
-from defs import *
-from sizeval import *
-from containerval import *
-from vocabval import *
-from stringval import *
 from logicval import *
-
-
-### CONSTANTS & DEFINES
-
-### IMPLEMENTATION ###
-
-### END #######################################################################
-
+from numberval import *
+from stringval import *
+from typeval import *
+from vocabval import *

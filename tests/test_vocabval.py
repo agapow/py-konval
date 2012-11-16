@@ -28,5 +28,21 @@ class TestVocabVal(unittest.TestCase):
 		with self.assertRaises(ValidationError):
 			v('juliet')
 
-if __name__ == '__main__':
-	unittest.main()
+	def test_to_yes_or_no(self):
+		v = ToYesOrNo()
+
+		s = 'y'
+		self.assertTrue(v(s))
+
+		s = 'n'
+		self.assertFalse(v(s))
+
+		s = 'Yes'
+		self.assertTrue(v(s))
+
+		s = 'No'
+		self.assertFalse(v(s))
+
+		s = 'giggle'
+		with self.assertRaises(ConversionError):
+			v(s)

@@ -1,9 +1,9 @@
 import unittest
 
 from konval.basevalidator import ValidationError, ConversionError
-from konval.sizeval import *
+from konval.numberval import *
 
-class TestSizeVal(unittest.TestCase):
+class TestNumberVal(unittest.TestCase):
 
 	def test_range(self):
 		v = Range(min=1, max=5)

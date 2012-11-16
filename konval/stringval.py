@@ -76,11 +76,14 @@ class IsNonBlank(BaseValidator):
 class IsRegexMatch (BaseValidator):
 	"""
 	Only allow values that match a certain regular expression.
+
+	This uses a case insensitive match to add flexibility for strings
+	that are going to be converted to lower (or upper) case anyway.
 		
 	"""
 
 	def __init__ (self, pattern):
-		self.re = re.compile (pattern)
+		self.re = re.compile(pattern, re.IGNORECASE)
 		self.pattern = pattern
 
 	def validate_value (self, value):
@@ -108,6 +111,50 @@ class IsPlainText(IsRegexMatch):
 			super(IsPlainText, self).validate_value(value)
 		except ValidationError:
 			raise ValidationError('The value %s must be plain text only.' % value)
+
+
+class IsEmailAddress(IsRegexMatch):
+	"""
+	See if string is a valid email
+	"""
+
+	def __init__(self):
+		super(IsEmailAddress, self).__init__(r'^[a-z0-9\._\+%-]+@[a-z0-9\.-]+(\.[A-Z]{2,4})+$')
+
+	def validate_value(self, value):
+		try:
+			super(IsEmailAddress, self).validate_value(value)
+		except ValidationError:
+			raise ValidationError('The value %s is not a valid email address.' % value)
+
+class IsName(IsRegexMatch):
+	"""
+	Checks to make sure the string is a name. In otherwords,
+	no numbers, symbols, spaces or punctuation.
+	"""
+
+	def __init__(self):
+		super(IsName, self).__init__(r'^[a-z]+$')
+
+	def validate_value(self, value):
+		try:
+			super(IsName, self).validate_value(value)
+		except ValidationError: 
+			raise ValidationError('The value %s is not a valid name.' % value)
+
+class IsIpv4(IsRegexMatch):
+	"""
+	See if string is a valid IP address
+	"""
+
+	def __init__(self):
+		super(IsIpv4, self).__init__(r'^([0-9]{1,3}\.){3}[0-9]{1,3}$')
+
+	def validate_value(self, value):
+		try:
+			super(IsIpv4, self).validate_value(value)
+		except ValidationError:
+			raise ValidationError('The value %s is not a valid ip address.' % value)
 
 class ToCanonical (BaseValidator):
 	"""

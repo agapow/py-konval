@@ -54,3 +54,26 @@ class Between(BaseValidator):
 			raise ValidationError('The specified value %s is not within upper bound %s' % (value, self.max))
 		
 		return True
+
+class IsEqual(BaseValidator):
+	"""
+	Make sure a value is equal to a pre-determined value.
+	"""
+
+	def __init__(self, equal):
+		self.equal = equal
+
+	def validate_value(self, value):
+		if value != self.equal:
+			raise ValidationError('The value %s is not equal to %s' % (value, self.equal))
+
+		return True
+
+class IsZero(IsEqual):
+	"""
+	Only allow zero.
+	"""
+
+	def __init__(self):
+		super(IsZero, self).__init__(0)
+

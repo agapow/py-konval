@@ -77,7 +77,51 @@ class TestStringVal(unittest.TestCase):
 
 		self.assertEqual(v(s), s)
 
-		s = '@)(($&*($@# some invalid shit'
+		s = '@)(($&*($@# some invalid user garbage'
+		with self.assertRaises(ValidationError):
+			v(s)
+
+	def test_email_address(self):
+		v = IsEmailAddress()
+		s = 'petermelias@gmail.com'
+
+		self.assertEqual(v(s), s)
+
+		s = 'peter m elias@gmail.foobar'
+		with self.assertRaises(ValidationError):
+			v(s)
+
+		s = 'PETERMELIAS@GMAIL.COM'
+		self.assertEqual(v(s), s)
+
+	def test_is_name(self):
+		v = IsName()
+		s = 'Peter'
+
+		self.assertEqual(v(s), s)
+
+		s = 'peter'
+		self.assertEqual(v(s), s)
+
+		s = 'p3t3r'
+		with self.assertRaises(ValidationError):
+			v(s)
+
+	def test_is_ipv4(self):
+		v = IsIpv4()
+		s = '127.0.0.1'
+
+		self.assertEqual(v(s), s)
+
+		s = 'blatantly not an ip address'
+		with self.assertRaises(ValidationError):
+			v(s)
+
+		s = '1234.1234.1234.1337'
+		with self.assertRaises(ValidationError):
+			v(s)
+
+		s = '1337.1337.1337.foobar'
 		with self.assertRaises(ValidationError):
 			v(s)
 
