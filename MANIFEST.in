@@ -3,3 +3,4 @@ include setup.cfg
 include README.txt
 recursive-include konval *
 recursive-include docs *
+recursive-include tests *
