@@ -20,7 +20,7 @@ class Range(Konvalidator):
 
 class Minimum(Range):
 	def __init__ (self, minimum):
-		super(Minimum, self).__init__(minium=minimum)
+		super(Minimum, self).__init__(minimum=minimum)
 
 class Maximum(Range):
 	def __init__ (self, maximum):

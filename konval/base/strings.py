@@ -60,7 +60,7 @@ class IsRegexMatch(Konvalidator):
 		result = self.re.match(value)
 		if not result:
 			raise ValidationError('The value %s does not match the pattern %s' % (repr(value), self.pattern))
-		return result
+		return True
 
 class ToCanonical(Konvalidator):
 	'''

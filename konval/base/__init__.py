@@ -73,7 +73,7 @@ class Or(Konvalidator):
 	def __init__(self, validators):
 		self.validators = validators
 	
-	def convert_value(self, value):
+	def __call__(self, value):
 		last_exception = None
 		for validator in self.validators:
 			try:
@@ -86,16 +86,50 @@ class Or(Konvalidator):
 
 
 class And(Konvalidator):
-	''' All validators must succeed. Exceptions immediately bubble. '''
+	''' All validators must succeed. If a group specific error message is supplied
+		it will be raised, otherwise the first error raised is thrown. 
+	'''
 
-	def __init__(self, validators):
+	def __init__(self, validators, error_message=None):
 		self.validators = validators
+		self.error_message = error_message
 
-	def convert_value(self, value):
+	def __call__(self, value):
+		self.value = value
 		current_value = value
 		for validator in self.validators:
-			current_value = validator(value)
+			try:
+				current_value = validator(current_value)
+			except KonvalError as e:
+				if self.error_message:
+					raise KonvalError(self.error_message)
+				else:
+					raise e
 		return current_value
+
+class If(Konvalidator):
+	''' If condition is satisfied, then validate / convert '''
+
+	def __init__(self, condition, validator):
+		self.condition = condition
+		self.validator = validator
+
+	def __call__(self, value):
+		if self.condition:
+			return self.validator(value)
+
+class IfElse(Konvalidator):
+	''' If first validator fails, try second one. '''
+
+	def __init__(self, validator, other_validator):
+		self.validator = validator
+		self.other_validator = other_validator
+
+	def __call__(self, value):
+		try:
+			return self.validator(value)
+		except KonvalError:
+			return self.other_validator(value)
 
 class Default(Konvalidator):
 	'''
@@ -108,7 +142,7 @@ class Default(Konvalidator):
 		self.default = default
 		self.validator = validator
 
-	def convert_value(self, value):
+	def __call__(self, value):
 		try:
 			valid_value = self.validator(value)
 			return valid_value
@@ -124,7 +158,7 @@ class Constant(Konvalidator):
 	def __init__(self, constant_value):
 		self.constant_value = value
 	
-	def convert_value(self, value):
+	def __call__(self, value):
 		return self.constant_value
 
 class Konval(object):

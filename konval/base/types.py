@@ -48,7 +48,7 @@ class IsType(Konvalidator):
 	
 	def __init__(self, allowed_classes):
 		if type(allowed_classes) is not list:
-			allowed_classes = list(allowed_classes)
+			allowed_classes = [allowed_classes]
 		self.allowed_classes = allowed_classes
 	
 	def validate_value(self, value):

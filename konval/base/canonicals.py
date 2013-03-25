@@ -28,4 +28,4 @@ CANON_SPACE_RE = re.compile (r'[\-_\s]+')
 
 SLUG_RE = re.compile(r'\W+')
 
-PUNCTUATION_RE = re.compile(r'[!\@#\$\%\^\&\*\(\)\.,\/\\\?\-_\`\~<>;:'"\[\]\{\}\+\= \|]+')
+PUNCTUATION_RE = re.compile(r'[\!\@\#\$\%\^\&\*\(\)\.\,\/\\\?\-\_\`\~\<\>\;\:\'\"\[\]\{\}\+\=\|]+')

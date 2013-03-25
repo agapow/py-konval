@@ -19,15 +19,9 @@ handled by passing raw data through a chain of validators. In this spirit,
 
 """
 
-__version__ = "0.3"
-__author__ = "Paul-Michael Agapow"
+__version__ = "0.4"
+__author__ = "Paul-Michael Agapow, Peter M. Elias"
 __email__ = "pma@agapow.net"
 
-
-from basevalidator import *
-from containerval import *
-from logicval import *
-from numberval import *
-from stringval import *
-from typeval import *
-from vocabval import *
+from base import *
+from base import canonicals, containers, numbers, strings, types, vocabulary
