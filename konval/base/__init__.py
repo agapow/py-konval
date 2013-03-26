@@ -89,6 +89,7 @@ class And(Konvalidator):
 	''' All validators must succeed. If a group specific error message is supplied
 		it will be raised, otherwise the first error raised is thrown. 
 	'''
+	value = ''
 
 	def __init__(self, validators, error_message=None):
 		self.validators = validators
@@ -102,7 +103,7 @@ class And(Konvalidator):
 				current_value = validator(current_value)
 			except KonvalError as e:
 				if self.error_message:
-					raise KonvalError(self.error_message)
+					raise KonvalError(self.error_message.format(value=current_value))
 				else:
 					raise e
 		return current_value
@@ -117,6 +118,7 @@ class If(Konvalidator):
 	def __call__(self, value):
 		if self.condition:
 			return self.validator(value)
+		return value
 
 class IfElse(Konvalidator):
 	''' If first validator fails, try second one. '''
@@ -156,7 +158,7 @@ class Constant(Konvalidator):
 	'''
 
 	def __init__(self, constant_value):
-		self.constant_value = value
+		self.constant_value = constant_value
 	
 	def __call__(self, value):
 		return self.constant_value
@@ -189,20 +191,23 @@ class Konval(object):
 		for name, value in pairs.iteritems():
 			self.process_value(name, value)
 
-	def process_value(self, name, value):
+	def process_value(self,	 name, value):
 		if name in self.schema.keys():
 			self.errors[name] = []
 			self.processed[name] = None
 			validators = self.schema[name]
 			
+			if type(validators) is not list:
+				validators = [validators]
+
 			for validator in validators:
 				try:
-					pr_value = v(value)
-				except (ValidationError) as e:
+					processed_value = validator(value)
+				except KonvalError as e:
 					self.errors[name].append(e.message)
 
 			if self.errors[name] == []:
-				self.processed[name] = pr_value
+				self.processed[name] = processed_value
 	
 	def get_processed(self):
 		return self.processed

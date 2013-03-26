@@ -1,6 +1,7 @@
-from nose.tools.trivial import assert_equal, assert_true, assert_false, assert_raises, assert_raises_regexp
+from nose.tools.trivial import assert_equal, assert_true, assert_false, assert_raises, assert_raises_regexp, assert_is_not_none
 
 import konval
+from konval.meta.standard import IsEmailAddress, IsName
 
 def test_konvalidator():
 	konvalidator = konval.Konvalidator()
@@ -47,12 +48,68 @@ def test_and():
 
 	assert_equal(and_validator(succeeding_string), 'i-am-over-ten-characters')
 
-def test_if(): pass
+def test_if():
+	if_validator = konval.If(True, konval.types.ToType(int))
 
-def test_if_else(): pass
+	numerical_string = '1234'
 
-def test_default(): pass
+	assert_equal(if_validator(numerical_string), 1234)
 
-def test_constant(): pass
+	if_validator = konval.If(False, konval.types.ToType(int))
 
-def test_konval(): pass
+	assert_equal(if_validator(numerical_string), numerical_string)
+
+def test_if_else():
+	if_else_validator = konval.IfElse(konval.types.IsType(str), konval.types.ToType(str))
+
+	string_value = '1234'
+
+	assert_equal(if_else_validator(string_value), string_value)
+
+	numerical_value = 1234
+
+	assert_equal(if_else_validator(numerical_value), string_value)
+
+def test_default():
+	default_validator = konval.Default(konval.types.IsType(str), 'NOT A STRING!')
+
+	string_value = '1234'
+
+	assert_equal(default_validator(string_value), string_value)
+
+	numerical_value = 1234
+
+	assert_equal(default_validator(numerical_value), 'NOT A STRING!')
+
+def test_constant():
+	constant_validator = konval.Constant('mah brand.')
+
+	assert_equal(constant_validator('some data'), 'mah brand.')
+
+def test_konval():
+	test_schema = {
+		u'name': IsName(),
+		u'email': IsEmailAddress(),
+		u'age': konval.types.IsType(int)
+	}
+
+	obj = konval.Konval(test_schema)
+
+	success_data = {
+		u'name': u'Peter M. Elias',
+		u'email': u'petermelias@gmail.com',
+		u'age': 37
+	}
+
+	obj.process(success_data)
+	assert_true(obj.is_valid())
+
+	fail_data = {
+		u'name': 123,
+		u'email': 1243,
+		u'age': 'fourteen'
+	}
+
+	obj.process(fail_data)
+	assert_false(obj.is_valid())
+	assert_is_not_none(obj.get_errors())

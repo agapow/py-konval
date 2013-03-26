@@ -6,7 +6,7 @@ class Range(Konvalidator):
 	
 	'''
 
-	def __init__ (self, minimum=None, maximum=None):
+	def __init__(self, minimum=None, maximum=None):
 		self.minimum = minimum
 		self.maximum = maximum
 

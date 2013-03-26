@@ -17,7 +17,6 @@ TODO: toRegex or ToRegexSub (for subpatterns) & regex transformations
 
 ------------
 
-- Introduce validator dependencies (i.e. if V1 fails, skip V2)
 - Add internet validators (as above)
 - Rethink IsList to allow for non-canonical matching as well
 - Rethink Konval process states to potentially allow for non-valid,

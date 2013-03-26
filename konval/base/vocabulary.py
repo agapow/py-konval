@@ -6,7 +6,7 @@ class Synonyms(Konvalidator):
 
 	'''
 
-	def __init__ (self, mapping):
+	def __init__(self, mapping):
 		self.mapping = mapping
 
 	def convert_value (self, value):
@@ -21,10 +21,10 @@ class InList(Konvalidator):
 	Ensure values fall within a pre-defined list.
 	'''
 	
-	def __init__ (self, term_list):
+	def __init__(self, term_list):
 		self.term_list = term_list
 
-	def validate_value (self, value):
+	def validate_value(self, value):
 		if value not in self.term_list:
 			raise ValidationError('Value %s is not in term list %s' % (repr(value), self.term_list))
 		return True
