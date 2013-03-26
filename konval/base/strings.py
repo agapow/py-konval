@@ -2,6 +2,15 @@ import re
 
 from . import Konvalidator, KonversionError, ValidationError, canonicals
 
+class IsNonBlank(Konvalidator):
+	''' Ensures non blank string '''
+
+	def validate_value(self, value):
+		if len(value) <= 0:
+			raise ValidationError('The value %s is empty.' % repr(value)
+		return True
+
+
 class ToStripped(Konvalidator):
 	'''
 	Transform strings by stripping flanking space.
