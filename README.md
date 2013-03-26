@@ -36,9 +36,6 @@ u'Peter M. Elias'
 konval.once(IsName(), 123456)
 'The specified value "1234" is not a valid name.'
 
-print result.get_value()
-u'Peter M. Elias'
-
 # Repeatable validation with schema
 
 schema = {u'name': IsName()}
