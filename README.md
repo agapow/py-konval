@@ -165,9 +165,6 @@ In this spirit, *konval* is a package that provides:
 
 * a rich library of validation objects
 * base classes for easily producing custom validators
-* The Konval service class for easily validating a data set
-  based on a predefined validator schema corresponding to input
-  value names.
 
 Konval is aimed at a one-way transformation of data, turning user input or
 stored data into Python objects. Certainly it could be used in the reverse
@@ -181,16 +178,9 @@ The name *konval* was chosen because:
 2. out of "valcon", "valkon", "conval" etc. it was the one with the fewest hits
    on Google
 
-
 ## References
 
-.. [konval-home] `konval home page <http://www.agapow.net/software/py-konval>`__
-
-.. [konval-pypi] `konval on PyPi <http://pypi.python.org/pypi/konval>`__
-
-.. [setuptools] `Setuptools & easy_install <http://packages.python.org/distribute/easy_install.html>`__
-
-.. [konval-github] `konval on github <https://github.com/agapow/py-konval>`__
-
-.. [formencode] `FormEncode <http://formencode.org>`__
+* [Konval Home Page](http://www.agapow.net/software/py-konval)
+* [PyPi](http://pypi.python.org/pypi/konval>)
+* [Form Encode](http://formencode.org>)
 
