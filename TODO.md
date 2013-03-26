@@ -15,3 +15,14 @@ Ensure your validator does not fit nicely in an existing META module before crea
 
 ### Cool
 - Allow for overridable error messages for validator instances
+
+### Specific Validators Needed
+
+* IsSSN
+* IsCreditCard
+* IsStreet
+* IsCity
+* IsState
+* IsCountry
+* IsZipcode
+* 
