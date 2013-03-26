@@ -211,6 +211,20 @@ def validate(schema, data):
 					result.add_error(name, e.message)
 	return result
 
+def quick(validator, value):
+	try:
+		validator(value)
+		return True
+	except KonvalError:
+		return False
+
+def once(validator, value):
+	try:
+		return validator(value)
+	except KonvalError as e:
+		return e.message
+
+
 class KonvalError(Exception): pass
 
 class ValidationError(KonvalError): pass

@@ -28,11 +28,13 @@ False
 konval.quick([IsName(), LengthBetween(3, 50)], 'Peter M. Elias')
 True
 
-# One off validation with results
+# One off validation with error messages
 
-result = konval.once(IsName(), 'Peter M. Elias')
-print result.is_valid()
-True
+konval.once(IsName(), 'Peter M. Elias')
+u'Peter M. Elias'
+
+konval.once(IsName(), 123456)
+'The specified value "1234" is not a valid name.'
 
 print result.get_value()
 u'Peter M. Elias'
