@@ -1,9 +1,152 @@
-============
-About konval
-============
+## Konval: validate without even trying.
 
-Background
-----------
+![build status](https://travis-ci.org/petermelias/Py-konval.png?branch=master)
+
+Konval is an input-agnostic validation and sanitization library that is
+extremely easy to use.
+
+Konval ships with common application validater / sanitizer functions to make
+your life as developer even better.
+
+Konval is built on a series of high level abstractions that make it very
+easy and flexible to implement customized validation scenarios that can be
+dropped in and re-used easily across your program.
+
+### Simple validation
+
+```python
+import konval
+from konval.meta.standard import IsName
+
+# Quick validation
+
+konval.quick(IsName(), 'Peter M. Elias')
+True
+konval.quick(IsName(), 123453254)
+False
+
+konval.quick([IsName(), LengthBetween(3, 50)], 'Peter M. Elias')
+True
+
+# One off validation with results
+
+result = konval.once(IsName(), 'Peter M. Elias')
+print result.is_valid()
+True
+
+print result.get_value()
+u'Peter M. Elias'
+
+# Repeatable validation with schema
+
+schema = {u'name': IsName()}
+
+result = konval.validate(schema, {u'name': 'Peter M. Elias'})
+
+print result.is_valid()
+True
+
+result = konval.validate(schema, {u'name': 'Not a real name...4342398!!*#'})
+
+print result.is_valid()
+False
+print result.get_errors()
+{u'name': ['The specified value "Not a real name...4342398!!*#" is not a valid name.']}
+
+```
+
+### Installation
+
+```python
+pip install konval
+```
+
+### Features
+
+* Includes a standard library of common validators
+* Quick Boolean validation
+* No strings attached one-off validation with results
+* Schema validation for repeatable data defined validation
+* Interface for automatically writing processed values to objects or data structures
+* Predefined user friendly error messages for each validator
+* Validator branching logic (AND, OR, IF, IFELSE, DEFAULT, CONSTANT)
+* Data sanitization (type conversion, common transformations)
+
+## More examples
+
+### Lower Level Objects
+
+```python
+
+# Some Base Validators
+
+schema = {
+	u'name': [IsType(str), LengthMinimum(10)],
+	u'age': [IsType(int), Between(13, 75)]
+}
+
+# Combine Validators and Sanitizers
+
+schema = {
+	u'name': [IsType(str), LengthMinimum(10), ToType(unicode)],
+	u'age': [IsType(str), ToType(int), Between(13, 75)]
+}
+
+# Use branching logic directly for complex schema
+
+schema = {
+	u'name': [IfElse(IsType(unicode), ToType(unicode)), LengthBetween(5, 255)],
+	u'age': [Default(NotZero(), 13)]
+}
+
+# Extend Branching logic to create custom validation / sanitization chains
+
+class IsStreet(And):
+
+	def __init__(self):
+		super(IsStreet, self).__init__(
+			IsNonBlank(),
+			IsRegexMatch(r'^[0-9]+ [a-z ]+$'),
+			ToType(unicode),
+			ToLower()
+		)
+
+result = konval.validate({u'street': IsStreet()}, {u'street': '1234 MOUNTAIN STREET'})
+
+print result.get_value(u'street')
+u'1234 mountain street'
+
+```
+
+## Quick Reference
+
+### Some Common Validators
+
+* IsAlpha
+* IsAlphaNumeric
+* IsEmailAddress
+* IsName
+* IsIpv4
+* IsStreet
+* IsZipcode
+* IsNonBlank
+
+### Validator modules (containing 10 - 15 low level validators each)
+
+* Containers
+* Numbers
+* Strings
+* Types
+* Vocabulary
+
+### Meta modules (containing application specific validators)
+
+* Standard
+* Form Input
+* Command line input
+
+
+## Background
 
 Validation and conversion of data.
 
@@ -27,86 +170,8 @@ In this spirit, *konval* is a package that provides:
   based on a predefined validator schema corresponding to input
   value names.
 
-Status
-------
-
-This release is now fairly stable and well tested (all validators covered by extensive unittests)
-and the service class provides a very straight forward API for using the library.
-
-The library can always use more validators, and the validator modules may be rearranged 
-in the coming weeks but the fundamental structure of the library is pretty stable.
-
-Expecting to drive towards a 1.0 release over the next month that will include a rock-solid
-API and at least 20-50 additional validators and covering tests.
-
-Detailed documentation will follow closely alongside the 1.0 release.
-
-Installation
-------------
-
-The simplest way to install *konval* is via ``easy_install`` [setuptools]_ or an
-equivalent program::
-
-	% easy_install konval
-
-Alternatively the tarball can be downloaded, unpacked and ``setup.py`` run::
-
-	% tar zxvf konval.tgz
-	% cd konval
-	% python set.py install
-
-*konval* has no prerequisites and should work with just about any version of
-Python.
-
-
-Using konval
-------------
-
-A full API is included in the source distribution.
-
-
-Examples
-~~~~~~~~
-
-1) Using the validators directly.
-
->>> v = IsType([str, int])
->>> v('123')
-'123'
-v({'obviously': 'not', 'a': 'string or int'})
-ValidationError('Value {'obviously': 'not', 'a': 'string or int'} is not in the list of allowed types [<type str>, <type int>]')
-
-2) Using the Konval service class
->>> schema = {
-			'name': [IsType([str]), IsNonBlank(), LengthRange(max=50)],
-			'age': [IsType([int]), IsNotEmpty()],
-			'gender': [IsType([str]), InList(['male', 'female', 'not sure'])], IsNonBlank()]
-		 }
-
->>> k = Konval(schema)
->>> data_set = {'name': 'Peter', 'age': 37, 'gender': 'male'}
->>> k.process(data_set)
->>> k.is_valid()
-True
->>> k.get_valid()
-{'name': 'Peter', 'age': 37, 'gender': 'male'}
->>> data_set = {'name': 1337, 'age': 'clearly not a number', 'gender': 'unknown'}
->>> k.process(data_set)
->>> k.is_valid()
-False
->>> k.get_valid()
-{}
->>> k.get_errors()
-{'name': <explanation of error>, 'age': <explanation of error>, 'gender': <explanation of error>}
-
-
-
-
-Limitations
------------
-
-*konval* is aimed at a one-way transformation of data, turning user input or
-stored data *into* Python objects. Certainly it could be used in the reverse
+Konval is aimed at a one-way transformation of data, turning user input or
+stored data into Python objects. Certainly it could be used in the reverse
 direction, but this is not a primary use case. FormEncode is based around
 two-way (round trip) conversion of data, so that may be a useful alternative.
 
@@ -118,8 +183,7 @@ The name *konval* was chosen because:
    on Google
 
 
-References
-----------
+## References
 
 .. [konval-home] `konval home page <http://www.agapow.net/software/py-konval>`__
 

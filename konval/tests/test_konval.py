@@ -93,16 +93,14 @@ def test_konval():
 		u'age': konval.types.IsType(int)
 	}
 
-	obj = konval.Konval(test_schema)
-
 	success_data = {
 		u'name': u'Peter M. Elias',
 		u'email': u'petermelias@gmail.com',
 		u'age': 37
 	}
 
-	obj.process(success_data)
-	assert_true(obj.is_valid())
+	result = konval.validate(test_schema, success_data)
+	assert_true(result.is_valid())
 
 	fail_data = {
 		u'name': 123,
@@ -110,6 +108,6 @@ def test_konval():
 		u'age': 'fourteen'
 	}
 
-	obj.process(fail_data)
-	assert_false(obj.is_valid())
-	assert_is_not_none(obj.get_errors())
+	result = konval.validate(test_schema, fail_data)
+	assert_false(result.is_valid())
+	assert_is_not_none(result.get_errors())

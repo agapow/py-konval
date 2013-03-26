@@ -163,64 +163,53 @@ class Constant(Konvalidator):
 	def __call__(self, value):
 		return self.constant_value
 
-class Konval(object):
-	'''
-	This service object encapsulates a convenient interface for 
-	managing common operations on a single schema.
-
-	Takes a schema that is simply a dictionary with the validators for
-	each key as the corresponding value.
-
-	Error and message handling are also encapsulated here in a convenient
-	manner.
-
-	See tests for examples.
-
-	'''
+class KonvalResult(object):
 
 	def __init__(self, schema):
 		self.schema = schema
-		self.reset()
-		
-	def reset(self):
-		self.processed = dict.fromkeys(self.schema.keys(), None)
-		self.errors = dict.fromkeys(self.schema.keys(), [])
-		self.valid = True
+		self.errors = {}
+		self.successes = {}
 
-	def process(self, pairs):
-		for name, value in pairs.iteritems():
-			self.process_value(name, value)
-
-	def process_value(self,	 name, value):
+	def add_error(self, name, message):
 		if name in self.schema.keys():
-			self.errors[name] = []
-			self.processed[name] = None
-			validators = self.schema[name]
-			
-			if type(validators) is not list:
-				validators = [validators]
+			if name not in self.errors.keys():
+				self.errors[name] = []
+			self.errors[name].append(message)
 
-			for validator in validators:
-				try:
-					processed_value = validator(value)
-				except KonvalError as e:
-					self.errors[name].append(e.message)
-
-			if self.errors[name] == []:
-				self.processed[name] = processed_value
-	
-	def get_processed(self):
-		return self.processed
+	def add_success(self, name, value):
+		if name in self.schema.keys():
+			self.successes[name] = value
 
 	def get_errors(self):
 		return dict((k, v) for k, v in self.errors.iteritems() if v != [])
 
 	def get_valid(self):
-		return dict((k, v) for k, v in self.processed.iteritems() if v is not None)
+		return dict((k, v) for k, v in self.successes.iteritems() if v is not None)
 
 	def is_valid(self):
 		return self.get_errors() == {}
 
+	def get_value(self, name):
+		try:
+			return self.successes[name]
+		except KeyError:
+			return None
+
+def validate(schema, data):
+	result = KonvalResult(schema)
+	for name, value in data.iteritems():
+		if name in schema.keys():
+			validators = schema[name]
+
+			if type(validators) is not list:
+				validators = [validators]
+			for validator in validators:
+				try:
+					processed_value = validator(value)
+					result.add_success(name, processed_value)
+				except KonvalError as e:
+					result.add_error(name, e.message)
+	return result
 
 class KonvalError(Exception): pass
 

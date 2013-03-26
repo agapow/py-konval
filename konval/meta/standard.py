@@ -11,7 +11,7 @@ class IsAlpha(And):
 				types.ToType(unicode),
 				strings.IsRegexMatch(r'^[A-Z \-_]+$')
 			),
-			'The specified value {value} is not a purely alphabetical string.'
+			'The specified value "{value}" is not a purely alphabetical string.'
 		)
 
 class IsAlphaNumeric(And):
@@ -23,7 +23,7 @@ class IsAlphaNumeric(And):
 				types.ToType(unicode),
 				strings.IsRegexMatch(r'^[A-z \-_0-9]+$')
 			),
-			'The specified value {value} is not a purely alphanumeric string.'
+			'The specified value "{value}" is not a purely alphanumeric string.'
 		)
 
 class IsEmailAddress(And):
@@ -33,7 +33,7 @@ class IsEmailAddress(And):
 				types.ToType(unicode),
 				strings.IsRegexMatch(r'^[a-z0-9\._\+%-]+@[a-z0-9\.-]+(\.[A-Z]{2,4})+$')
 			),
-			'The specified value {value} is not a valid email address'
+			'The specified value "{value}" is not a valid email address'
 		)
 
 class IsName(And):
@@ -48,7 +48,7 @@ class IsName(And):
 				types.ToType(unicode),
 				strings.IsRegexMatch(r'^[a-z \.]+$')
 			),
-			'The specified value {value} is not a valid name.'
+			'The specified value "{value}" is not a valid name.'
 		)
 
 class IsIpv4(And):
@@ -63,5 +63,5 @@ class IsIpv4(And):
 				strings.IsRegexMatch(r'^([0-9]{1,3}\.){3}[0-9]{1,3}$'),
 				types.ToType(ipaddress.IPv4Address)
 			),
-			'The specified value {value} is not a valid IPV4 address.'
+			'The specified value "{value}" is not a valid IPV4 address.'
 		)
