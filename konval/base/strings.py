@@ -7,9 +7,8 @@ class IsNonBlank(Konvalidator):
 
 	def validate_value(self, value):
 		if len(value) <= 0:
-			raise ValidationError('The value %s is empty.' % repr(value)
+			raise ValidationError('The value %s is empty.' % repr(value))
 		return True
-
 
 class ToStripped(Konvalidator):
 	'''
